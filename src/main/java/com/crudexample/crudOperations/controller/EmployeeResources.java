@@ -1,53 +1,83 @@
 package com.crudexample.crudOperations.controller;
 
+import com.crudexample.crudOperations.exceptions.EmployeeNotFoundException;
 import com.crudexample.crudOperations.model.Employee;
+import com.crudexample.crudOperations.repo.EmployeeRepo;
 import com.crudexample.crudOperations.service.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/employee")
+@Validated
 public class EmployeeResources {
-    private final EmployeeService employeeService;
 
-    public EmployeeResources(EmployeeService employeeService) {
-        this.employeeService = employeeService;
+    final static Logger logger = Logger.getLogger(String.valueOf(EmployeeResources.class));
+
+    EmployeeRepo employeeRepo;
+
+    EmployeeService employeeService;
+
+
+    public EmployeeResources(EmployeeRepo employeeRepo) {
+        this.employeeRepo = employeeRepo;
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Employee>> getAllEmployees(){
-        List<Employee> employees = employeeService.findAllEmployees();
-        return new ResponseEntity<>(employees, HttpStatus.OK);
+    @GetMapping("/employees")
+    List<Employee> all() {
+        return employeeRepo.findAll();
     }
 
-//    @GetMapping("/find/{id}")
-//    public ResponseEntity<Employee> getEmployeeById(@PathVariable("id")Long id){
-//        Optional employee = employeeService.findEmployeeById(id);
-//        return new ResponseEntity<>(employee, HttpStatus.OK);
-//    }
-
-    @PostMapping("/add")
-    public ResponseEntity<Employee> addEmployee(@RequestBody Employee employee){
-        Employee newEmployee = employeeService.addEmployee(employee);
-        return new ResponseEntity<>(newEmployee, HttpStatus.CREATED);
+    @PostMapping("/employees")
+    Employee saveEmployee(@RequestBody Employee employee) {
+        return employeeRepo.save(employee);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee){
-        Employee updateEmployee = employeeService.updateEmployee(employee);
-        return new ResponseEntity<>(updateEmployee, HttpStatus.OK);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Employee> deleteEmployee(@PathVariable("id")Long id){
-        employeeService.deleteEmployee(id);;
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PutMapping("/employees/update")
+    Employee updateEmployee(@RequestBody Employee employee) {
+        return employeeRepo.save(employee);
     }
 
 
+    @GetMapping("/employees/{id}")
+    Employee one(@PathVariable Long id) {
 
+        return employeeRepo.findById(id)
+                .orElseThrow(() -> new EmployeeNotFoundException(id));
+    }
+
+    @DeleteMapping("/employees/{id}")
+    void deleteEmployee(@PathVariable Long id) {
+        employeeRepo.deleteById(id);
+    }
+
+
+    @PutMapping("/employees/{id}")
+    Employee replaceEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
+
+        return employeeRepo.findById(id)
+                .map(employee -> {
+                    employee.setName(newEmployee.getName());
+                    employee.setEmail(newEmployee.getEmail());
+                    employee.setPhone(newEmployee.getPhone());
+                    employee.setImageUrl(newEmployee.getImageUrl());
+                    employee.setJobTitle(newEmployee.getJobTitle());
+                    return employeeRepo.save(employee);
+                })
+                .orElseGet(() -> {
+                    newEmployee.setId(id);
+                    return employeeRepo.save(newEmployee);
+                });
+    }
 }
+
+
+
+
+
+
