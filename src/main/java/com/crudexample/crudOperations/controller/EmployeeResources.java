@@ -15,49 +15,50 @@ import java.util.logging.Logger;
 @RestController
 @RequestMapping("/employee")
 @Validated
+@CrossOrigin
 public class EmployeeResources {
 
     final static Logger logger = Logger.getLogger(String.valueOf(EmployeeResources.class));
 
     EmployeeRepo employeeRepo;
 
-    EmployeeService employeeService;
-
 
     public EmployeeResources(EmployeeRepo employeeRepo) {
         this.employeeRepo = employeeRepo;
     }
 
-    @GetMapping("/employees")
+    @GetMapping("/list")
     List<Employee> all() {
         return employeeRepo.findAll();
     }
 
-    @PostMapping("/employees")
+    @PostMapping("/add")
     Employee saveEmployee(@RequestBody Employee employee) {
         return employeeRepo.save(employee);
     }
 
-    @PutMapping("/employees/update")
-    Employee updateEmployee(@RequestBody Employee employee) {
-        return employeeRepo.save(employee);
-    }
+//    @PostMapping("/employees")
+//  public ResponseEntity<Employee> saveEmployee(@RequestBody Employee employee){
+//        Employee newEmployee = employeeService.saveEmployee(employee);
+//        return new ResponseEntity<>(newEmployee, HttpStatus.CREATED);
+//    }
 
 
-    @GetMapping("/employees/{id}")
+
+    @GetMapping("/{id}")
     Employee one(@PathVariable Long id) {
 
         return employeeRepo.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException(id));
     }
 
-    @DeleteMapping("/employees/{id}")
+    @DeleteMapping("/{id}")
     void deleteEmployee(@PathVariable Long id) {
         employeeRepo.deleteById(id);
     }
 
 
-    @PutMapping("/employees/{id}")
+    @PutMapping("/{id}")
     Employee replaceEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
 
         return employeeRepo.findById(id)

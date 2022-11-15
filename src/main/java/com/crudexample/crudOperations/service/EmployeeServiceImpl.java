@@ -4,6 +4,8 @@ import com.crudexample.crudOperations.model.Employee;
 import com.crudexample.crudOperations.repo.EmployeeRepo;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -15,8 +17,5 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.employeeRepo = employeeRepo;
     }
 
-    @Override
-    public Employee saveEmployee(Employee employee) {
-        return employeeRepo.save(employee);
-    }
+
 }

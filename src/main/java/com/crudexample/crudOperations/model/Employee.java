@@ -1,6 +1,6 @@
 package com.crudexample.crudOperations.model;
 
-import lombok.Data;
+
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -29,7 +29,6 @@ public class Employee implements Serializable {
         this.jobTitle = jobTitle;
         this.phone = phone;
         this.imageUrl = imageUrl;
-
     }
 
     public Long getId() {
@@ -80,7 +79,6 @@ public class Employee implements Serializable {
         this.imageUrl = imageUrl;
     }
 
-
     @Override
     public String toString() {
         return "Employee{" +
@@ -92,7 +90,11 @@ public class Employee implements Serializable {
                 ", imageUrl='" + imageUrl + '\'' +
                 '}';
     }
-
-
 }
+
+
+
+
+
+
 
